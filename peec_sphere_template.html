@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Visibility · {{PROJECT_NAME}} · Peec AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --blue500:#2b7fff;
+  --blue300:#8ec5ff;
+  --blue200:#bfdbff;
+  --text-primary:rgba(253,253,253,1);
+  --text-secondary:rgba(253,253,253,0.64);
+  --text-tertiary:rgba(253,253,253,0.40);
+  --text-quaternary:rgba(253,253,253,0.24);
+  --stroke:rgba(253,253,253,0.07);
+  --stroke-mid:rgba(253,253,253,0.10);
+  --surface:rgba(253,253,253,0.04);
+  --surface-mid:rgba(253,253,253,0.07);
+  --bg:#060608;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--bg);overflow:hidden;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+canvas{display:block;position:fixed;inset:0}
+
+/* ── Top chrome ── */
+.chrome-top{
+  position:fixed;top:0;left:0;right:0;
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:22px 28px 0;
+  pointer-events:none;z-index:10;
+}
+
+/* Title block */
+.title-block{display:flex;flex-direction:column;gap:6px}
+.title{
+  font-size:19px;font-weight:600;
+  color:var(--text-primary);
+  letter-spacing:-0.02em;line-height:1;
+}
+.subtitle{
+  font-size:13px;font-weight:400;
+  color:var(--text-tertiary);
+  letter-spacing:-0.005em;line-height:1.5;
+  max-width:440px;
+}
+
+/* Live pill */
+.live-pill{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:500;
+  color:var(--text-tertiary);
+  background:var(--surface);
+  border:0.5px solid var(--stroke);
+  padding:5px 12px;border-radius:20px;
+  pointer-events:none;
+  margin-top:2px;
+}
+.live-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#00c950;flex-shrink:0;
+  animation:lp 2s infinite;
+}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Project badge — top right */
+.project-badge{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);
+  border:0.5px solid var(--stroke-mid);
+  border-radius:10px;padding:8px 14px;
+  pointer-events:none;
+}
+.project-logo{
+  width:28px;height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.project-label{
+  display:flex;flex-direction:column;gap:1px;
+}
+.project-name{
+  font-size:13px;font-weight:600;
+  color:var(--text-primary);letter-spacing:-0.008em;
+}
+.project-sub{
+  font-size:10px;font-weight:500;
+  color:var(--text-tertiary);letter-spacing:0.02em;
+  text-transform:uppercase;
+}
+
+/* Peec wordmark — below badge */
+.wordmark-wrap{
+  display:flex;flex-direction:column;align-items:flex-end;gap:6px;
+}
+.wordmark{
+  font-size:12px;font-weight:600;
+  color:var(--text-secondary);letter-spacing:-0.01em;
+  display:flex;align-items:center;gap:5px;
+  pointer-events:none;
+}
+.wdot{width:7px;height:7px;border-radius:2px;background:var(--blue500);display:inline-block}
+
+/* ── Leaderboard ── */
+.lb{
+  position:fixed;top:50%;right:28px;
+  transform:translateY(-50%);
+  z-index:10;width:218px;
+  background:rgba(6,6,10,0.92);
+  border:0.5px solid var(--stroke-mid);
+  border-radius:14px;
+  overflow:hidden;
+}
+.lb-head{
+  padding:14px 16px 10px;
+  border-bottom:0.5px solid var(--stroke);
+}
+.lb-head-title{
+  font-size:11px;font-weight:600;
+  color:var(--text-tertiary);
+  letter-spacing:0.06em;text-transform:uppercase;
+  margin-bottom:2px;
+}
+.lb-head-sub{
+  font-size:11px;color:var(--text-quaternary);
+  letter-spacing:-0.003em;
+}
+.lb-row{
+  display:grid;
+  grid-template-columns:22px 1fr 42px 34px;
+  align-items:center;
+  padding:6px 16px;
+  gap:0;
+  cursor:default;
+  transition:background 0.12s;
+  border-bottom:0.5px solid rgba(253,253,253,0.03);
+}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:rgba(253,253,253,0.03)}
+.lb-row.own{background:rgba(43,127,255,0.07)}
+.lb-row.own:hover{background:rgba(43,127,255,0.11)}
+.lb-num{
+  font-size:11px;font-weight:600;
+  color:var(--text-quaternary);
+  font-variant-numeric:tabular-nums;
+}
+.lb-num.top{color:var(--text-secondary)}
+.lb-name-cell{display:flex;align-items:center;gap:6px;min-width:0}
+.lb-swatch{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.lb-name{
+  font-size:13px;font-weight:500;
+  letter-spacing:-0.006em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.lb-pct{
+  font-size:12px;font-weight:600;
+  text-align:right;
+  letter-spacing:-0.005em;
+  font-variant-numeric:tabular-nums;
+}
+.lb-bar-cell{padding-left:8px}
+.lb-bar-bg{width:24px;height:3px;background:rgba(253,253,253,0.06);border-radius:2px;overflow:hidden}
+.lb-bar-fill{height:100%;border-radius:2px}
+
+/* ── Legend — bottom left ── */
+.legend{
+  position:fixed;bottom:24px;left:28px;
+  z-index:10;pointer-events:none;
+  background:rgba(6,6,10,0.88);
+  border:0.5px solid var(--stroke);
+  border-radius:10px;padding:12px 14px;
+  display:flex;flex-direction:column;gap:8px;
+  min-width:190px;
+}
+.leg-title{
+  font-size:10px;font-weight:600;
+  color:var(--text-quaternary);
+  letter-spacing:0.06em;text-transform:uppercase;
+  margin-bottom:2px;
+}
+.leg-row{display:flex;align-items:center;gap:9px}
+.leg-icon{flex-shrink:0;display:flex;align-items:center}
+.leg-label{font-size:12px;color:var(--text-tertiary);letter-spacing:-0.003em}
+.leg-divider{border:none;border-top:0.5px solid var(--stroke);margin:2px 0}
+
+/* ── Cluster labels (HTML overlay) ── */
+.cluster-label{
+  position:fixed;pointer-events:none;z-index:8;
+  transform:translateY(-50%);
+  transition:opacity 0.2s;
+  display:flex;align-items:center;
+}
+.cl-line{height:0.5px;width:12px;background:rgba(253,253,253,0.18);flex-shrink:0}
+.cl-box{
+  padding:4px 9px 3px;
+  background:rgba(6,6,10,0.88);
+  border:0.5px solid var(--stroke);
+  border-radius:6px;
+  display:flex;flex-direction:column;gap:1px;
+}
+.cl-name{font-size:12px;font-weight:600;letter-spacing:-0.006em;white-space:nowrap}
+.cl-vis{font-size:10px;font-weight:500;color:var(--text-tertiary);white-space:nowrap;letter-spacing:0.01em}
+
+/* ── Tooltip ── */
+.tooltip{
+  position:fixed;
+  background:#0c0c12;
+  border:0.5px solid var(--stroke-mid);
+  border-radius:12px;padding:14px 16px;
+  pointer-events:none;display:none;z-index:100;
+  min-width:200px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.95);
+}
+.tt-name{
+  font-size:15px;font-weight:600;
+  color:var(--text-primary);letter-spacing:-0.011em;margin-bottom:3px;
+}
+.tt-badge{
+  display:none;font-size:9px;font-weight:600;
+  color:var(--blue500);background:rgba(43,127,255,0.12);
+  padding:2px 7px;border-radius:4px;letter-spacing:0.04em;
+  text-transform:uppercase;margin-left:7px;vertical-align:middle;
+}
+.tt-sub{font-size:12px;color:var(--text-tertiary);margin-bottom:12px;letter-spacing:-0.003em}
+.tt-div{border:none;border-top:0.5px solid var(--stroke);margin:10px 0}
+.tt-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:5px}
+.tt-row:last-child{margin-bottom:0}
+.tt-lbl{font-size:12px;color:var(--text-tertiary)}
+.tt-val{font-size:12px;font-weight:600;color:var(--blue300)}
+.tt-hero{font-size:24px;color:var(--text-primary);letter-spacing:-0.025em;line-height:1}
+
+.hint{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  font-size:11px;color:var(--text-quaternary);
+  z-index:10;pointer-events:none;transition:opacity 0.6s;
+  letter-spacing:0.01em;
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<!-- Top chrome -->
+<div class="chrome-top">
+  <!-- Left: title -->
+  <div class="title-block">
+    <h1 class="title">Which brands dominate AI search?</h1>
+    <p class="subtitle">Brighter, denser clusters = higher AI visibility. Powered by Peec MCP.</p>
+    <div class="live-pill" style="width:fit-content"><div class="live-dot"></div>{{DATE_RANGE}}</div>
+  </div>
+
+  <!-- Right: project badge + wordmark -->
+  <div class="wordmark-wrap">
+    <!-- BMW logo SVG (official roundel simplified) -->
+    <div class="project-badge">
+      <div class="project-label">
+        <span class="project-name">{{PROJECT_NAME}} project</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard -->
+<div class="lb" id="lb"></div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="leg-title">How to read this</div>
+  <div class="leg-row">
+    <div class="leg-icon">
+      <div style="width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,0.96);box-shadow:0 0 6px rgba(255,255,255,0.5)"></div>
+    </div>
+    <span class="leg-label">Dense & bright = high AI visibility</span>
+  </div>
+  <div class="leg-row">
+    <div class="leg-icon">
+      <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.1);margin:0 2.5px"></div>
+    </div>
+    <span class="leg-label">Sparse & dim = low AI visibility</span>
+  </div>
+  <hr class="leg-divider"/>
+  <div class="leg-row">
+    <div class="leg-icon">
+      <div style="width:13px;height:13px;border-radius:50%;background:#2b7fff;box-shadow:0 0 8px rgba(43,127,255,0.7)"></div>
+    </div>
+    <span class="leg-label">Blue = {{PROJECT_NAME}}</span>
+  </div>
+
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip">
+  <div><span class="tt-name" id="tt-name"></span><span class="tt-badge" id="tt-badge">Own brand</span></div>
+  <div class="tt-sub" id="tt-sub">{{PROJECT_NAME}} project · {{DATE_RANGE}}</div>
+  <div class="tt-row"><span class="tt-lbl">AI mentions</span><span class="tt-val tt-hero" id="tt-ment"></span></div>
+  <hr class="tt-div"/>
+  <div class="tt-row"><span class="tt-lbl">Visibility score</span><span class="tt-val" id="tt-vis"></span></div>
+  <div class="tt-row"><span class="tt-lbl">Share of voice</span><span class="tt-val" id="tt-sov"></span></div>
+  <div class="tt-row"><span class="tt-lbl">Sentiment</span><span class="tt-val" id="tt-sent"></span></div>
+  <div class="tt-row"><span class="tt-lbl">Avg mention position</span><span class="tt-val" id="tt-pos"></span></div>
+</div>
+
+<div class="hint" id="hint">drag to spin · scroll to zoom · hover any cluster to explore</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────
+// Replace this array with real data from the Peec MCP brand report.
+// `own` must be true for the own-brand (gets the blue colour + pulse).
+const BRANDS_RAW = {{BRANDS_DATA}};
+const LB_BRANDS=[...BRANDS_RAW].sort((a,b)=>b.vis-a.vis);
+const maxM=Math.max(...BRANDS_RAW.map(b=>b.mentions));
+const minVis=Math.min(...BRANDS_RAW.map(b=>b.vis));
+const maxVis=Math.max(...BRANDS_RAW.map(b=>b.vis));
+function visScale(v){return Math.pow((v-minVis)/(maxVis-minVis),0.28);}
+BRANDS_RAW.forEach(b=>{b.vs=b.own?1.0:visScale(b.vis);b.mn=b.mentions/maxM;});
+
+// ── Leaderboard ───────────────────────────────────────────────────────────
+function buildLB(){
+  const el=document.getElementById('lb');
+  el.innerHTML=`
+    <div class="lb-head">
+      <div class="lb-head-title">Visibility ranking</div>
+      <div class="lb-head-sub">by AI mention score</div>
+    </div>
+    ${LB_BRANDS.map((b,i)=>{
+      const barPct=Math.round((b.vis/maxVis)*100);
+      const isOwn=b.own;
+      const sw=isOwn?'#2b7fff':`rgba(255,255,255,${0.15+b.vs*0.65})`;
+      const nc=isOwn?'#5ca4ff':`rgba(253,253,253,${0.42+b.vs*0.52})`;
+      const pc=isOwn?'#8ec5ff':`rgba(253,253,253,${0.38+b.vs*0.58})`;
+      const bc=isOwn?'#2b7fff':`rgba(255,255,255,${0.1+b.vs*0.65})`;
+      return `<div class="lb-row${isOwn?' own':''}" data-name="${b.name}">
+        <span class="lb-num${i<3?' top':''}">${i+1}</span>
+        <div class="lb-name-cell">
+          <div class="lb-swatch" style="background:${sw}"></div>
+          <span class="lb-name" style="color:${nc}">${b.name}</span>
+        </div>
+        <span class="lb-pct" style="color:${pc}">${Math.round(b.vis*100)}%</span>
+        <div class="lb-bar-cell">
+          <div class="lb-bar-bg"><div class="lb-bar-fill" style="width:${barPct}%;background:${bc}"></div></div>
+        </div>
+      </div>`;
+    }).join('')}`;
+
+  el.querySelectorAll('.lb-row').forEach(row=>{
+    row.addEventListener('mouseenter',e=>{
+      const b=BRANDS_RAW.find(x=>x.name===row.dataset.name);
+      if(b) showTip(b,e.clientX-230,e.clientY);
+    });
+    row.addEventListener('mousemove',e=>moveTip(e.clientX-230,e.clientY));
+    row.addEventListener('mouseleave',()=>document.getElementById('tooltip').style.display='none');
+  });
+}
+buildLB();
+
+function showTip(b,x,y){
+  document.getElementById('tt-name').textContent=b.name;
+  document.getElementById('tt-badge').style.display=b.own?'inline-block':'none';
+  document.getElementById('tt-ment').textContent=(b.mentions/1000).toFixed(0)+'k';
+  document.getElementById('tt-vis').textContent=Math.round(b.vis*100)+'%';
+  document.getElementById('tt-sov').textContent=Math.round(b.sov*100)+'%';
+  document.getElementById('tt-sent').textContent=b.sent+' / 100';
+  document.getElementById('tt-pos').textContent='#'+b.pos.toFixed(1);
+  document.getElementById('tooltip').style.display='block';
+  moveTip(x,y);
+}
+function moveTip(x,y){
+  const tt=document.getElementById('tooltip');
+  tt.style.left=Math.max(8,Math.min(x,window.innerWidth-215))+'px';
+  tt.style.top=Math.max(70,Math.min(y-80,window.innerHeight-240))+'px';
+}
+
+// ── Three.js ──────────────────────────────────────────────────────────────
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setClearColor(0x060608,1);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(50,1,0.1,200);
+camera.position.set(0,0,10.5);
+function resize(){const w=window.innerWidth,h=window.innerHeight;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
+resize();window.addEventListener('resize',()=>{resize();updateLabels();});
+scene.add(new THREE.AmbientLight(0xffffff,0.6));
+const dl=new THREE.DirectionalLight(0x4488ff,0.7);dl.position.set(5,8,5);scene.add(dl);
+
+// Stars
+{const pts=[];for(let i=0;i<1600;i++){const v=new THREE.Vector3((Math.random()-.5)*110,(Math.random()-.5)*110,(Math.random()-.5)*110);if(v.length()>10)pts.push(v);}
+scene.add(new THREE.Points(new THREE.BufferGeometry().setFromPoints(pts),new THREE.PointsMaterial({color:0xffffff,size:0.04,transparent:true,opacity:0.26})));}
+
+// Fibonacci sphere
+const SPHERE_R=4.2;
+function fibSphere(n,R){const pts=[],phi=Math.PI*(3-Math.sqrt(5));for(let i=0;i<n;i++){const y=1-(i/(n-1))*2,r=Math.sqrt(1-y*y),t=phi*i;pts.push(new THREE.Vector3(r*Math.cos(t),y,r*Math.sin(t)).multiplyScalar(R));}return pts;}
+const centres=fibSphere(BRANDS_RAW.length,SPHERE_R);
+const pivot=new THREE.Group();scene.add(pivot);
+const clusterData=[];
+
+BRANDS_RAW.forEach((b,bi)=>{
+  const vs=b.vs,own=b.own,ctr=centres[bi];
+  const nSat=Math.round(18+vs*vs*532);
+  const spread=0.12+vs*0.55;
+  const hubR=own?0.13:0.03+vs*0.085;
+  const nodeR=0.013+vs*0.019;
+  const nodeBright=own?1.0:0.05+vs*0.95;
+  const edgeBright=own?0.24:0.02+vs*0.22;
+
+  const group=new THREE.Group();pivot.add(group);
+
+  const hubCol=own?new THREE.Color(0x2b7fff):new THREE.Color(nodeBright,nodeBright,nodeBright);
+  const hub=new THREE.Mesh(new THREE.SphereGeometry(hubR,14,14),new THREE.MeshBasicMaterial({color:hubCol,transparent:true,opacity:own?1:nodeBright}));
+  hub.position.copy(ctr);group.add(hub);
+
+  if(own){const gm=new THREE.MeshBasicMaterial({color:0x2b7fff,transparent:true,opacity:0.07,side:THREE.BackSide});const g=new THREE.Mesh(new THREE.SphereGeometry(0.42,12,12),gm);g.position.copy(ctr);group.add(g);}
+
+  const satCol=own?new THREE.Color(0x5ca4ff):new THREE.Color(nodeBright,nodeBright,nodeBright);
+  const satMat=new THREE.MeshBasicMaterial({color:satCol,transparent:true,opacity:own?0.70:nodeBright*0.82});
+  const geoLg=new THREE.SphereGeometry(nodeR,7,7);
+  const geoMd=new THREE.SphereGeometry(nodeR*0.65,6,6);
+  const geoSm=new THREE.SphereGeometry(nodeR*0.38,5,5);
+  const satPos=[];
+
+  for(let ni=0;ni<nSat;ni++){
+    const tier=Math.random();
+    let dist;
+    if(tier<0.48) dist=Math.random()*spread*0.32;
+    else if(tier<0.80) dist=spread*0.32+Math.random()*spread*0.42;
+    else dist=spread*0.74+Math.random()*spread*0.50;
+    const rnd=new THREE.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).normalize();
+    const pos=ctr.clone().add(rnd.multiplyScalar(dist));
+    pos.normalize().multiplyScalar(SPHERE_R*(0.80+Math.random()*0.28));
+    const geo=tier<0.48?geoLg:tier<0.80?geoMd:geoSm;
+    const m=new THREE.Mesh(geo,satMat);m.position.copy(pos);group.add(m);satPos.push(pos);
+  }
+
+  const edgeMat=new THREE.LineBasicMaterial({color:own?0x3a8fff:0xffffff,transparent:true,opacity:edgeBright});
+  satPos.forEach(sp=>group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([ctr.clone(),sp.clone()]),edgeMat)));
+  const nPeer=Math.round(nSat*0.85);
+  for(let e=0;e<nPeer;e++){const a=satPos[Math.floor(Math.random()*satPos.length)];const b2=satPos[Math.floor(Math.random()*satPos.length)];if(a&&b2&&a!==b2)group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([a.clone(),b2.clone()]),edgeMat));}
+
+  clusterData.push({brand:b,centre:ctr,hub,group,vs,own,allNodes:[ctr,...satPos.filter((_,i)=>i%4===0)]});
+});
+
+// Cross edges
+function arcPts(a,b,steps=20){const pts=[],axis=new THREE.Vector3().crossVectors(a,b).normalize(),ang=a.angleTo(b);for(let i=0;i<=steps;i++){const q=new THREE.Quaternion().setFromAxisAngle(axis,ang*(i/steps));pts.push(a.clone().applyQuaternion(q));}return pts;}
+for(let i=0;i<clusterData.length;i++){for(let j=i+1;j<clusterData.length;j++){
+  const ci=clusterData[i],cj=clusterData[j];
+  if(ci.centre.distanceTo(cj.centre)>SPHERE_R*1.5)continue;
+  const vsAvg=(ci.vs+cj.vs)/2,isBMWe=ci.own||cj.own;
+  const n=Math.round(1+vsAvg*vsAvg*6),alpha=isBMWe?0.15:Math.max(0.015,vsAvg*0.09);
+  for(let e=0;e<n;e++){
+    const an=ci.allNodes[Math.floor(Math.random()*ci.allNodes.length)];
+    const bn=cj.allNodes[Math.floor(Math.random()*cj.allNodes.length)];
+    pivot.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(arcPts(an.clone(),bn.clone(),18)),new THREE.LineBasicMaterial({color:isBMWe?0x2b7fff:0xffffff,transparent:true,opacity:alpha})));
+  }
+}}
+
+// ── Cluster labels (HTML overlay) ─────────────────────────────────────────
+const labelEls=clusterData.map(cd=>{
+  const b=cd.brand;
+  const el=document.createElement('div');
+  el.className='cluster-label';
+  const nameCol=b.own?'#5ca4ff':`rgba(253,253,253,${0.5+cd.vs*0.45})`;
+  const borderCol=b.own?'rgba(43,127,255,0.3)':`rgba(253,253,253,${0.05+cd.vs*0.08})`;
+  el.innerHTML=`
+    <div class="cl-line" style="background:${b.own?'rgba(43,127,255,0.35)':'rgba(253,253,253,0.15)'}"></div>
+    <div class="cl-box" style="border-color:${borderCol};${b.own?'background:rgba(6,10,20,0.92)':''}">
+      <span class="cl-name" style="color:${nameCol}">${b.name}</span>
+      <span class="cl-vis">${Math.round(b.vis*100)}% visibility</span>
+    </div>`;
+  document.body.appendChild(el);
+  return el;
+});
+
+function updateLabels(){
+  const w=window.innerWidth,h=window.innerHeight;
+  clusterData.forEach((cd,i)=>{
+    const wp=cd.hub.getWorldPosition(new THREE.Vector3());
+    const pr=wp.clone().project(camera);
+    const sx=(pr.x*.5+.5)*w,sy=(1-(pr.y*.5+.5))*h;
+    const behind=pr.z>1;
+    const el=labelEls[i];
+    const isRight=sx>w/2;
+    el.style.flexDirection=isRight?'row':'row-reverse';
+    el.style.left=isRight?(sx+10)+'px':(sx-10-170)+'px';
+    el.style.top=sy+'px';
+    el.style.opacity=behind?'0':pr.z<0.86?'0.94':'0.15';
+  });
+}
+
+// ── Drag ─────────────────────────────────────────────────────────────────
+let isDrag=false,pX=0,pY=0,vX=0,vY=0.0008,hintHidden=false;
+canvas.addEventListener('mousedown',e=>{isDrag=true;pX=e.clientX;pY=e.clientY;if(!hintHidden){document.getElementById('hint').style.opacity='0';hintHidden=true;}});
+window.addEventListener('mouseup',()=>isDrag=false);
+window.addEventListener('mousemove',e=>{
+  if(isDrag){vY=(e.clientX-pX)*0.004;vX=(e.clientY-pY)*0.004;pivot.rotation.y+=vY;pivot.rotation.x+=vX;pivot.rotation.x=Math.max(-1.2,Math.min(1.2,pivot.rotation.x));pX=e.clientX;pY=e.clientY;}
+  if(e.clientX>window.innerWidth-255){document.getElementById('tooltip').style.display='none';return;}
+  doHover(e);
+});
+canvas.addEventListener('touchstart',e=>{isDrag=true;pX=e.touches[0].clientX;pY=e.touches[0].clientY;});
+canvas.addEventListener('touchend',()=>isDrag=false);
+canvas.addEventListener('touchmove',e=>{if(!isDrag)return;vY=(e.touches[0].clientX-pX)*0.004;vX=(e.touches[0].clientY-pY)*0.004;pivot.rotation.y+=vY;pivot.rotation.x+=vX;pivot.rotation.x=Math.max(-1.2,Math.min(1.2,pivot.rotation.x));pX=e.touches[0].clientX;pY=e.touches[0].clientY;e.preventDefault();},{passive:false});
+window.addEventListener('wheel',e=>{camera.position.z=Math.max(4.5,Math.min(16,camera.position.z+e.deltaY*0.01));},{passive:true});
+
+// Hover
+const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();
+function doHover(e){
+  mouse.x=(e.clientX/window.innerWidth)*2-1;mouse.y=-(e.clientY/window.innerHeight)*2+1;
+  raycaster.setFromCamera(mouse,camera);
+  let best=-1,bestD=Infinity;
+  clusterData.forEach((cd,i)=>{const wp=cd.hub.getWorldPosition(new THREE.Vector3());const d=raycaster.ray.distanceToPoint(wp);if(d<0.5&&d<bestD){bestD=d;best=i;}});
+  if(best!==-1){showTip(clusterData[best].brand,e.clientX,e.clientY);canvas.style.cursor='pointer';}
+  else{document.getElementById('tooltip').style.display='none';canvas.style.cursor=isDrag?'grabbing':'grab';}
+}
+
+// Animate
+const clock=new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const et=clock.getElapsedTime();
+  if(!isDrag){vX*=0.93;vY=vY*0.93;vY+=(0.0008-vY)*0.018;pivot.rotation.y+=vY;pivot.rotation.x+=vX;pivot.rotation.x=Math.max(-1.2,Math.min(1.2,pivot.rotation.x));}
+  const bmw=clusterData.find(c=>c.own);
+  if(bmw)bmw.hub.scale.setScalar(1+Math.sin(et*2.2)*0.07);
+  updateLabels();
+  renderer.render(scene,camera);
+}
+animate();
+</script>
+</body>
+</html>

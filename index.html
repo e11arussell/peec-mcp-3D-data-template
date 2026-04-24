@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Your Peec Sphere Template · Peec AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#060608;
+  --surface:rgba(253,253,253,0.04);
+  --surface-mid:rgba(253,253,253,0.07);
+  --stroke:rgba(253,253,253,0.07);
+  --stroke-mid:rgba(253,253,253,0.11);
+  --text-primary:rgba(253,253,253,1);
+  --text-secondary:rgba(253,253,253,0.64);
+  --text-tertiary:rgba(253,253,253,0.4);
+  --text-quaternary:rgba(253,253,253,0.22);
+  --blue500:#2b7fff;
+  --blue300:#8ec5ff;
+  --blue-surface:rgba(43,127,255,0.05);
+  --blue-stroke:rgba(43,127,255,0.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  width:100%;min-height:100%;
+  background:var(--bg);
+  font-family:'Geist',system-ui,sans-serif;
+  color:var(--text-primary);
+  -webkit-font-smoothing:antialiased;
+}
+body{padding:40px 0 56px}
+.page{max-width:640px;margin:0 auto;padding:0 28px}
+
+/* Hero */
+.hero{margin-bottom:32px;text-align:left}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:500;
+  color:var(--blue300);
+  background:var(--blue-surface);
+  border:0.5px solid var(--blue-stroke);
+  padding:4px 10px;border-radius:20px;
+  margin-bottom:14px;letter-spacing:-0.003em;
+}
+.hero-dot{width:5px;height:5px;border-radius:50%;background:var(--blue500)}
+.hero-title{
+  font-size:26px;font-weight:600;
+  letter-spacing:-0.022em;line-height:1.15;
+  margin-bottom:8px;
+}
+.hero-sub{
+  font-size:14px;color:var(--text-tertiary);
+  letter-spacing:-0.003em;line-height:1.55;
+}
+
+/* Section label */
+.section-label{
+  font-size:10px;font-weight:600;
+  color:var(--text-tertiary);
+  letter-spacing:0.07em;text-transform:uppercase;
+  margin-bottom:12px;margin-top:32px;
+}
+.section-label:first-of-type{margin-top:32px}
+
+/* Step card */
+.step{
+  display:flex;gap:14px;
+  background:var(--surface);
+  border:0.5px solid var(--stroke);
+  border-radius:12px;
+  padding:16px 18px;
+  margin-bottom:10px;
+}
+.step:last-child{margin-bottom:0}
+.step-num{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--blue-surface);
+  border:0.5px solid var(--blue-stroke);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;
+  color:var(--blue300);flex-shrink:0;
+}
+.step-body{flex:1;min-width:0}
+.step-title{
+  font-size:13px;font-weight:600;
+  color:var(--text-primary);
+  letter-spacing:-0.006em;margin-bottom:3px;
+}
+.step-text{
+  font-size:13px;color:var(--text-secondary);
+  line-height:1.6;letter-spacing:-0.003em;
+}
+.step-text code{
+  font-family:'Geist Mono',monospace;
+  font-size:11.5px;
+  background:var(--surface-mid);
+  color:var(--text-primary);
+  padding:1px 6px;border-radius:3px;
+}
+
+/* Prompt box */
+.prompt-box{
+  background:rgba(43,127,255,0.04);
+  border:0.5px solid var(--blue-stroke);
+  border-radius:12px;
+  padding:16px 18px;
+  position:relative;
+}
+.prompt-text{
+  font-family:'Geist Mono',monospace;
+  font-size:11.5px;font-weight:400;
+  color:var(--text-primary);
+  line-height:1.7;letter-spacing:0.003em;
+  white-space:pre-wrap;
+  padding-right:60px;
+}
+.copy-btn{
+  position:absolute;top:12px;right:12px;
+  font-size:11px;font-weight:500;
+  color:var(--blue300);
+  background:var(--blue-surface);
+  border:0.5px solid var(--blue-stroke);
+  border-radius:6px;padding:5px 11px;
+  cursor:pointer;font-family:'Geist',system-ui,sans-serif;
+  transition:background 0.12s;
+}
+.copy-btn:hover{background:rgba(43,127,255,0.13)}
+
+/* Template download */
+.template-card{
+  background:linear-gradient(180deg,rgba(43,127,255,0.08) 0%,rgba(43,127,255,0.03) 100%);
+  border:0.5px solid var(--blue-stroke);
+  border-radius:14px;
+  padding:20px 22px;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:4px;
+}
+.template-icon{
+  width:44px;height:44px;
+  border-radius:10px;
+  background:rgba(43,127,255,0.15);
+  border:0.5px solid var(--blue-stroke);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  font-family:'Geist Mono',monospace;
+  font-size:14px;font-weight:600;
+  color:var(--blue300);
+}
+.template-meta{flex:1;min-width:0}
+.template-name{
+  font-size:14px;font-weight:600;
+  color:var(--text-primary);
+  letter-spacing:-0.008em;
+  margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.template-desc{
+  font-size:12px;color:var(--text-tertiary);
+  line-height:1.5;letter-spacing:-0.003em;
+}
+.template-instruction{
+  font-size:11px;font-weight:500;
+  color:var(--blue300);
+  margin-top:6px;letter-spacing:-0.003em;
+}
+
+.template-download{
+  flex-shrink:0;
+  font-size:12px;font-weight:600;
+  color:#fdfdfd;
+  background:var(--blue500);
+  border:0.5px solid rgba(142,197,255,0.35);
+  padding:9px 16px;border-radius:8px;
+  text-decoration:none;
+  letter-spacing:-0.005em;
+  transition:background 0.12s,transform 0.08s;
+  cursor:pointer;
+  font-family:'Geist',system-ui,sans-serif;
+}
+.template-download:hover{background:#4a93ff}
+.template-download:active{transform:scale(0.97)}
+
+/* Tip callout */
+.tip{
+  background:rgba(0,201,80,0.04);
+  border:0.5px solid rgba(0,201,80,0.22);
+  border-left:2px solid #00c950;
+  border-radius:8px;
+  padding:12px 14px;
+  margin-top:16px;
+}
+.tip-title{font-size:11px;font-weight:600;color:#5ce88a;margin-bottom:4px;letter-spacing:0.06em;text-transform:uppercase}
+.tip-text{font-size:12.5px;color:var(--text-secondary);line-height:1.55;letter-spacing:-0.003em}
+
+/* Hashtag line */
+.sign-off{
+  margin-top:36px;padding-top:20px;
+  border-top:0.5px solid var(--stroke);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.sign-off-text{font-size:12px;color:var(--text-tertiary);line-height:1.5;letter-spacing:-0.003em}
+.sign-off-text strong{color:var(--text-primary);font-weight:600}
+.wordmark{font-size:12px;font-weight:600;color:var(--text-secondary);letter-spacing:-0.01em;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.wdot{width:7px;height:7px;border-radius:2px;background:var(--blue500);display:inline-block}
+
+/* Project input */
+.project-input-wrap{
+  background:var(--surface);
+  border:0.5px solid var(--stroke-mid);
+  border-radius:10px;
+  padding:12px 14px;
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:12px;
+}
+.project-input-label{
+  font-size:11px;font-weight:500;
+  color:var(--text-tertiary);
+  letter-spacing:-0.003em;
+  flex-shrink:0;
+}
+.project-input{
+  flex:1;
+  background:transparent;
+  border:none;outline:none;
+  font-family:'Geist',system-ui,sans-serif;
+  font-size:13px;font-weight:600;
+  color:var(--blue300);
+  letter-spacing:-0.005em;
+  padding:4px 0;
+  border-bottom:0.5px solid var(--blue-stroke);
+  transition:border-color 0.12s;
+}
+.project-input:focus{border-bottom-color:var(--blue500)}
+.project-input::placeholder{color:var(--text-quaternary);font-weight:500}
+.project-highlight{
+  color:var(--blue300);font-weight:600;
+  background:rgba(43,127,255,0.1);
+  padding:1px 5px;border-radius:3px;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag"><div class="hero-dot"></div>Peec AI MCP · Template pack</div>
+    <h1 class="hero-title">Your AI Visibility Sphere template</h1>
+    <p class="hero-sub">Thanks for grabbing this! Everything you need to build your own is below. Takes about 2 minutes.</p>
+  </div>
+
+  <!-- The template file -->
+  <p class="section-label">1. The template file</p>
+
+  <div class="template-card">
+    <div class="template-icon">{ }</div>
+    <div class="template-meta">
+      <div class="template-name">peec_sphere_template.html</div>
+      <div class="template-desc">Pre-built HTML with Three.js, full Peec design system, and 3 placeholders Claude fills.</div>
+    </div>
+    <a href="peec_sphere_template.html" download="peec_sphere_template.html" class="template-download">Download</a>
+  </div>
+
+  <!-- How to use -->
+  <p class="section-label">2. How to use it</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-title">Connect the Peec MCP to Claude</div>
+      <div class="step-text">In Claude, add Peec AI as an MCP connector. (You'll need a Peec account with data in it.)</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-title">Attach the template to a new chat</div>
+      <div class="step-text">Drag <code>peec_sphere_template.html</code> into the chat.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-title">Enter your project name & copy the prompt</div>
+      <div class="step-text">Type your Peec project name below — the prompt updates automatically. Then hit copy and paste it into Claude.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <div class="step-title">Download the HTML, open in your browser</div>
+      <div class="step-text">Claude hands you back a finished file. Double-click, done.</div>
+    </div>
+  </div>
+
+  <!-- Prompt -->
+  <p class="section-label">3. The prompt</p>
+
+  <div class="project-input-wrap">
+    <label class="project-input-label" for="project-name">Your project →</label>
+    <input id="project-name" class="project-input" type="text" placeholder="e.g. Tally" value="BMW" oninput="updatePrompt()" />
+  </div>
+
+  <div class="prompt-box">
+    <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+    <div class="prompt-text" id="p1"></div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-title">Pro tip</div>
+    <div class="tip-text">Save this as a Claude Project with the template in "project knowledge" and the prompt as "custom instructions" — then every time you want a refresh, you just type <strong>"refresh sphere"</strong>. Two words. New data in 15 seconds.</div>
+  </div>
+
+  <!-- Sign off -->
+  <div class="sign-off">
+    <div class="sign-off-text">
+      Built something cool with it?<br/>
+      Tag <strong>#builtwithpeec</strong> — I want to see it ✨
+    </div>
+    <div class="wordmark"><span class="wdot"></span>Peec AI</div>
+  </div>
+
+</div>
+
+<script>
+const PROMPT_TEMPLATE = `Using the Peec MCP, pull the brand report for the {{P}} project — name, visibility, mention_count, share_of_voice, sentiment, and position for all tracked brands over the last 30 days ending today. Sort by visibility descending and take the TOP 10 brands only — but always include the own brand ({{P}}) in the top 10 even if it's not in the top 10 by visibility, replacing the 10th-ranked brand if needed. Use the attached template file exactly as-is. Fill in the placeholders: replace {{PROJECT_NAME}} with "{{P}}", {{DATE_RANGE}} with the date range as "DD Mmm – DD Mmm YYYY" (e.g. "24 Mar – 23 Apr 2026"), and {{BRANDS_DATA}} with a JavaScript array of objects (one per brand, 10 total) where each object has: name (string), mentions (number), vis (visibility as 0-1 decimal), sov (share_of_voice as 0-1 decimal), sent (sentiment score 0-100), pos (avg position as a decimal), and own (true only for {{P}}, false for everyone else). Return the completed HTML file as a downloadable artifact — do not change any of the template's code, styles, or structure.`;
+
+function updatePrompt(){
+  const raw = (document.getElementById('project-name').value || '').trim();
+  const name = raw || 'BMW';
+  const filled = PROMPT_TEMPLATE.split('{{P}}').join(name);
+  // Display version: highlight occurrences of the project name
+  const highlighted = filled
+    .split(name)
+    .map(s => escapeHtml(s))
+    .join(`<span class="project-highlight">${escapeHtml(name)}</span>`);
+  document.getElementById('p1').innerHTML = highlighted;
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+
+function copyPrompt(btn){
+  const raw = (document.getElementById('project-name').value || '').trim();
+  const name = raw || 'BMW';
+  const text = PROMPT_TEMPLATE.split('{{P}}').join(name);
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied';
+    setTimeout(()=>btn.textContent='Copy',2000);
+  });
+}
+
+updatePrompt();
+</script>
+</body>
+</html>
